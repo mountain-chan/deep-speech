@@ -1,7 +1,7 @@
 import json
 from os.path import join, dirname
 from ibm_watson import SpeechToTextV1
-from ibm_watson.websocket import RecognizeCallback, AudioSource
+from ibm_watson.websocket import RecognizeCallback
 
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
@@ -32,11 +32,9 @@ class MyRecognizeCallback(RecognizeCallback):
 myRecognizeCallback = MyRecognizeCallback()
 
 with open('audios/woman1_wb.wav', 'rb') as audio_file:
-    audio_source = AudioSource(audio_file)
-    speech_to_text.recognize_using_websocket(
-        audio=audio_source,
+    text = speech_to_text.recognize(
+        audio=audio_file,
         content_type='audio/wav',
-        recognize_callback=myRecognizeCallback,
-        model='en-US_BroadbandModel',
-        timestamps=True,
-        max_alternatives=3)
+        model='en-US_BroadbandModel')
+
+print(text)

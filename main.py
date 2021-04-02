@@ -5,7 +5,7 @@ from deepspeech import Model
 
 model_file_path = "models/deepspeech-0.9.3-models.pbmm"
 lm_file_path = "models/deepspeech-0.9.3-models.scorer"
-audio_file_path = "audios/woman1_wb.wav"
+audio_file_path = "audios/OSR_us_000_0010_8k.wav"
 beam_width = 500
 lm_alpha = 0.93
 lm_beta = 1.18
