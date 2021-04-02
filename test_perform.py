@@ -100,10 +100,10 @@ print(r.recognize_google(audio))
 """
 
 long = timeit.timeit(ex1, setup=setup, number=1)
-print("Time spent when using Model: ", long)
+print("Spending Time when using Model: ", long)
 
 long = timeit.timeit(ex2, setup=setup, number=1)
-print("Time spent when using IBM API: ", long)
+print("Spending Time when using IBM API: ", long)
 
 long = timeit.timeit(ex3, setup=setup, number=1)
-print("Time spent when using Google API: ", long)
+print("Spending Time when using Google API: ", long)

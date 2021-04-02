@@ -2,7 +2,7 @@ import speech_recognition as sr
 
 r = sr.Recognizer()
 
-with sr.AudioFile("audios/woman1_wb.wav") as source:
+with sr.AudioFile("audios/OSR_us_000_0030_8k.wav") as source:
     audio = r.record(source)
 
 print(r.recognize_google(audio))
