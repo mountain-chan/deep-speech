@@ -1,2 +1,6 @@
 deepspeech==0.9.3
-pyaudio~=0.2.11
+pipwin==0.5.1
+boto3==1.17.42
+SpeechRecognition==3.8.1
+ibm-cloud-sdk-core==3.7.0
+ibm-watson==5.1.0
