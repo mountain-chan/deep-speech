@@ -1,37 +1,37 @@
 import timeit
 
 setup = """
-import wave
-
-import numpy as np
-from deepspeech import Model
-
-model_file_path = "models/deepspeech-0.9.3-models.pbmm"
-lm_file_path = "models/deepspeech-0.9.3-models.scorer"
-audio_file_path = "audios/OSR_us_000_0010_8k.wav"
-beam_width = 500
-lm_alpha = 0.93
-lm_beta = 1.18
-
-model = Model(model_file_path)
-model.enableExternalScorer(lm_file_path)
-model.setScorerAlphaBeta(lm_alpha, lm_beta)
-model.setBeamWidth(beam_width)
-
-
-def read_wav_file(filename):
-    with wave.open(filename) as w:
-        rate = w.getframerate()
-        frames = w.getnframes()
-        buffer = w.readframes(frames)
-
-    return buffer, rate
-
-
-def transcribe(audio_file):
-    buffer, rate = read_wav_file(audio_file)
-    data16 = np.frombuffer(buffer, dtype=np.int16)
-    return model.stt(data16)
+# import wave
+# 
+# import numpy as np
+# from deepspeech import Model
+# 
+# model_file_path = "models/deepspeech-0.9.3-models.pbmm"
+# lm_file_path = "models/deepspeech-0.9.3-models.scorer"
+# audio_file_path = "audios/woman1_wb.wav"
+# beam_width = 500
+# lm_alpha = 0.93
+# lm_beta = 1.18
+# 
+# model = Model(model_file_path)
+# model.enableExternalScorer(lm_file_path)
+# model.setScorerAlphaBeta(lm_alpha, lm_beta)
+# model.setBeamWidth(beam_width)
+# 
+# 
+# def read_wav_file(filename):
+#     with wave.open(filename) as w:
+#         rate = w.getframerate()
+#         frames = w.getnframes()
+#         buffer = w.readframes(frames)
+# 
+#     return buffer, rate
+# 
+# 
+# def transcribe(audio_file):
+#     buffer, rate = read_wav_file(audio_file)
+#     data16 = np.frombuffer(buffer, dtype=np.int16)
+#     return model.stt(data16)
 
 
 
@@ -74,36 +74,66 @@ import speech_recognition as sr
 
 r = sr.Recognizer()
 
-with sr.AudioFile("audios/OSR_us_000_0010_8k.wav") as source:
+with sr.AudioFile("audios/woman1_wb.wav") as source:
     audio = r.record(source)
 
+"""
+
+setup_aws = """
+# AWS set up
+import time
+
+import boto3
+import pprint
+
+transcribe = boto3.client('transcribe')
+transcribe.delete_transcription_job(
+    TranscriptionJobName='temp1'
+)
+job_name = "temp1"  # non-existent job name
+job_uri = "s3://survey-transcribe/woman1_wb.wav"
+transcribe.start_transcription_job(
+    TranscriptionJobName=job_name,
+    Media={'MediaFileUri': job_uri},
+    LanguageCode='en-US'
+)
 """
 
 ex1 = """ 
 print(transcribe(audio_file_path))
 """
 
-ex2 = """ 
-with open('audios/OSR_us_000_0010_8k.wav', 'rb') as audio_file:
-    audio_source = AudioSource(audio_file)
-    speech_to_text.recognize_using_websocket(
-        audio=audio_source,
+ex_ibm = """ 
+with open('audios/woman1_wb.wav', 'rb') as audio_file:
+    text = speech_to_text.recognize(
+        audio=audio_file,
         content_type='audio/wav',
-        recognize_callback=myRecognizeCallback,
-        model='en-US_BroadbandModel',
-        timestamps=True,
-        max_alternatives=3)
+        model='en-US_BroadbandModel')
+    
+    print(text)
 """
 
-ex3 = """ 
+ex_google = """ 
 print(r.recognize_google(audio))
 """
 
-long = timeit.timeit(ex1, setup=setup, number=1)
-print("Spending Time when using Model: ", long)
+ex_aws = """
+while True:
+    status = transcribe.get_transcription_job(TranscriptionJobName=job_name)
+    if status['TranscriptionJob']['TranscriptionJobStatus'] in ['COMPLETED', 'FAILED']:
+        break
+    print("Not ready yet...")
+    time.sleep(2)
+"""
 
-long = timeit.timeit(ex2, setup=setup, number=1)
+# long = timeit.timeit(ex1, setup=setup, number=1)
+# print("Spending Time when using Model: ", long)
+
+long = timeit.timeit(ex_ibm, setup=setup, number=1)
 print("Spending Time when using IBM API: ", long)
 
-long = timeit.timeit(ex3, setup=setup, number=1)
+long = timeit.timeit(ex_google, setup=setup, number=1)
 print("Spending Time when using Google API: ", long)
+
+long = timeit.timeit(ex_aws, setup=setup_aws, number=1)
+print("Spending Time when using AWS API: ", long)
