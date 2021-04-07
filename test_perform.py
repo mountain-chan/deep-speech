@@ -103,18 +103,33 @@ ex1 = """
 print(transcribe(audio_file_path))
 """
 
+ex_google = """ 
+# recognize speech using Google Speech Recognition
+try:
+    print("Google Speech Recognition thinks you said: " + r.recognize_google(audio))
+except sr.UnknownValueError:
+    print("Google Speech Recognition could not understand audio")
+except sr.RequestError as e:
+    print("Could not request results from Google Speech Recognition service; {0}".format(e))
+"""
+
+ex_sphinx = """ 
+try:
+    print("Sphinx thinks you said: " + r.recognize_sphinx(audio))
+except sr.UnknownValueError:
+    print("Sphinx could not understand audio")
+except sr.RequestError as e:
+    print("Sphinx error; {0}".format(e))
+"""
+
 ex_ibm = """ 
 with open('audios/woman1_wb.wav', 'rb') as audio_file:
     text = speech_to_text.recognize(
         audio=audio_file,
         content_type='audio/wav',
         model='en-US_BroadbandModel')
-    
-    print(text)
-"""
 
-ex_google = """ 
-print(r.recognize_google(audio))
+    print(text)
 """
 
 ex_aws = """
@@ -129,11 +144,14 @@ while True:
 # long = timeit.timeit(ex1, setup=setup, number=1)
 # print("Spending Time when using Model: ", long)
 
-long = timeit.timeit(ex_ibm, setup=setup, number=1)
-print("Spending Time when using IBM API: ", long)
+long = timeit.timeit(ex_sphinx, setup=setup, number=1)
+print("Spending Time when using SPHINX API: ", long)
 
 long = timeit.timeit(ex_google, setup=setup, number=1)
 print("Spending Time when using Google API: ", long)
+
+long = timeit.timeit(ex_ibm, setup=setup, number=1)
+print("Spending Time when using IBM API: ", long)
 
 long = timeit.timeit(ex_aws, setup=setup_aws, number=1)
 print("Spending Time when using AWS API: ", long)
